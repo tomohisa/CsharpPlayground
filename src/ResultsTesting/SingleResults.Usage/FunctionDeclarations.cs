@@ -78,7 +78,16 @@ public static class FunctionDeclarations
         => Increment(target1)
             .CombineValue(Add(target2, target3))
             .Railway(Divide);
-    
+
+    public static Task<SingleResult<int>> RailwayCalc3Async(int target1, int target2, int target3)
+        => IncrementAsync(target1)
+            .CombineValueAsync(() => AddAsync(target2, target3))
+            .RailwayAsync(DivideAsync);
+    public static Task<SingleResult<int>> RailwayCalc3Async2(int target1, int target2, int target3)
+        => Increment(target1)
+            .CombineValueAsync(() => AddAsync(target2, target3))
+            .Railway(Divide);
+        
     public static SingleResult<int> RailwayInstance(int target1)
         => Increment(target1)
             .Railway(Double)
@@ -86,5 +95,9 @@ public static class FunctionDeclarations
     
     public static Task<SingleResult<int>> RailwayAsync(int target1)
         => IncrementAsync(target1).RailwayAsync(DoubleAsync).RailwayAsync(TripleAsync);
+    public static Task<SingleResult<int>> Railway2Async(int target1)
+        => Increment(target1).RailwayAsync(DoubleAsync).RailwayAsync(TripleAsync);
+    public static Task<SingleResult<int>> Railway3Async(int target1)
+        => Increment(target1).RailwayAsync(DoubleAsync).Railway(Triple);
 
 }
