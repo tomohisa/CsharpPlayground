@@ -22,6 +22,34 @@ public record TwoValueResult<TValue1, TValue2>(
             { Value1: { } value1, Value2: { } value2 } => handleValueFunc(value1, value2),
             _ => SingleResult<TValue3>.OutOfRange
         };
+    public async Task<SingleResult<TValue3>> RailwayAsync<TValue3>(
+        Func<TValue1, TValue2, Task<SingleResult<TValue3>>> handleValueFunc) => this
+        switch
+        {
+            { Exception: not null } e => e.Exception,
+            { Value1: { } value1, Value2: { } value2 } => await handleValueFunc(value1, value2),
+            _ => SingleResult<TValue3>.OutOfRange
+        };
+    public async Task<SingleResult<TValue3>> RailwayAsyncWrapTry<TValue3>(
+        Func<TValue1, TValue2, Task<TValue3>> handleValueFunc) => this
+        switch
+        {
+            { Exception: not null } e => SingleResult<TValue3>.FromException(e.Exception),
+            { Value1: { } value1, Value2: { } value2 } => await SingleResult<TValue3>.WrapTryAsync(
+                () => handleValueFunc(value1, value2)),
+            _ => SingleResult<TValue3>.OutOfRange
+        };
+
+    public SingleResult<TValue3> RailwayWrapTry<TValue3>(
+        Func<TValue1, TValue2, TValue3> handleValueFunc) => this
+        switch
+        {
+            { Exception: not null } e => e.Exception,
+            { Value1: { } value1, Value2: { } value2 } => SingleResult<TValue3>.WrapTry(
+                () => handleValueFunc(value1, value2)),
+            _ => SingleResult<TValue3>.OutOfRange
+        };
+
     public ThreeValueResult<TValue1, TValue2, TValue3> CombineValue<TValue3>(
         SingleResult<TValue3> thirdValue) => this switch
     {
