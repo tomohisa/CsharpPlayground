@@ -69,6 +69,31 @@ public record SingleResult<TValue>(TValue? Value, Exception? Exception)
             new ResultValueNullException(
                 $"out of range for {nameof(TValue)} combine to {nameof(TValue2)}"))
     };
+    public async Task<TwoValueResult<TValue, TValue2>> CombineValueAsyncWrapTry<TValue2>(
+        Func<Task<TValue2>> secondValueFunc) => this switch
+    {
+        { Exception: not null } e => new TwoValueResult<TValue, TValue2>(
+            Value,
+            default,
+            e.Exception),
+        { Value: not null } => await SingleResult<TValue2>.WrapTryAsync(secondValueFunc) switch
+        {
+            { Exception: not null } e => new TwoValueResult<TValue, TValue2>(
+                Value,
+                default,
+                e.Exception),
+            { Value: { } secondValue } => new TwoValueResult<TValue, TValue2>(
+                Value,
+                secondValue,
+                null),
+            _ => new TwoValueResult<TValue, TValue2>(Value, default, null)
+        },
+        _ => new TwoValueResult<TValue, TValue2>(
+            Value,
+            default,
+            new ResultValueNullException(
+                $"out of range for {nameof(TValue)} combine to {nameof(TValue2)}"))
+    };
     public TwoValueResult<TValue, TValue2> CombineValueWrapTry<TValue2>(
         Func<TValue2> secondValueFunc) => this switch
     {
@@ -146,6 +171,17 @@ public record SingleResult<TValue>(TValue? Value, Exception? Exception)
         try
         {
             return func();
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
+    }
+    public static async Task<SingleResult<TValue>> WrapTryAsync(Func<Task<TValue>> func)
+    {
+        try
+        {
+            return await func();
         }
         catch (Exception e)
         {
