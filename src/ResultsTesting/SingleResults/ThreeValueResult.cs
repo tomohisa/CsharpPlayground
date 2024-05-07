@@ -9,16 +9,27 @@ public record ThreeValueResult<TValue1, TValue2, TValue3>(
 {
     [JsonIgnore]
     public bool IsSuccess => Exception is null;
-    public Exception GetException() => Exception ?? throw new InvalidOperationException("no exception");
-    public TValue1 GetValue1() => (IsSuccess ? Value1 : throw new InvalidOperationException("no value")) ?? throw new InvalidOperationException();
-    public TValue2 GetValue2() => (IsSuccess ? Value2 : throw new InvalidOperationException("no value")) ?? throw new InvalidOperationException();
-    public TValue3 GetValue3() => (IsSuccess ? Value3 : throw new InvalidOperationException("no value")) ?? throw new InvalidOperationException();
+    public Exception GetException() =>
+        Exception ?? throw new ResultsInvalidOperationException("no exception");
+    public TValue1 GetValue1() =>
+        (IsSuccess ? Value1 : throw new ResultsInvalidOperationException("no value")) ??
+        throw new ResultsInvalidOperationException();
+    public TValue2 GetValue2() =>
+        (IsSuccess ? Value2 : throw new ResultsInvalidOperationException("no value")) ??
+        throw new ResultsInvalidOperationException();
+    public TValue3 GetValue3() =>
+        (IsSuccess ? Value3 : throw new ResultsInvalidOperationException("no value")) ??
+        throw new ResultsInvalidOperationException();
 
-    public SingleResult<TValue4> Railway<TValue4>(Func<TValue1, TValue2, TValue3, SingleResult<TValue4>> handleValueFunc) => this
+    public SingleResult<TValue4> Railway<TValue4>(
+        Func<TValue1, TValue2, TValue3, SingleResult<TValue4>> handleValueFunc) => this
         switch
         {
             { Exception: not null } e => e.Exception,
-            { Value1: { } value1, Value2: { } value2, Value3: { } value3 } => handleValueFunc(value1, value2, value3),
+            { Value1: { } value1, Value2: { } value2, Value3: { } value3 } => handleValueFunc(
+                value1,
+                value2,
+                value3),
             _ => SingleResult<TValue4>.OutOfRange
         };
 }

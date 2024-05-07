@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FunctionalResults\FunctionalResults.csproj" />
+        <ProjectReference Include="..\FunctionalResults\FunctionalResults.csproj"/>
     </ItemGroup>
 
 </Project>

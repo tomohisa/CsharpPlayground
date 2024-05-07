@@ -11,9 +11,9 @@ public static class FunctionDeclarations
         (numerator, denominator) switch
         {
             (_, 0) => new Failure<int>(new ApplicationException("can not divide by 0")),
-            _ => new Success<int>( numerator / denominator)
+            _ => new Success<int>(numerator / denominator)
         };
-    
+
     public static IFunctionalResult<int> CombinedCalc(int target1, int target2, int target3)
         => Increment(target1) switch
         {

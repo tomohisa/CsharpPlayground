@@ -14,11 +14,11 @@ public static class FunctionDeclarations
     public static Result<int> CombinedCalc(int target1, int target2, int target3)
         => Increment(target1)
             .Match(
-                (value) => Add(value, target2)
+                value => Add(value, target2)
                     .Match(
-                        (value2) => Divide(value2, target1),
-                        (exception) => new Result<int>(exception)
+                        value2 => Divide(value2, target1),
+                        exception => new Result<int>(exception)
                     ),
-                (exception) => new Result<int>(exception)
+                exception => new Result<int>(exception)
             );
 }
